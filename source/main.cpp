@@ -112,7 +112,7 @@ int main() {
     s32 targetindex = -1;
     int terminationflag = 0;
 
-    ir::Handle<ir::Services::IRU>();
+    ir::gIr.irDev13Driver.Initialize();
 
     for (;;) {
         s32 index;
@@ -171,7 +171,24 @@ int main() {
             handlecount++;
 
         } else if (index >= REMOTESESSIONINDEX && index < INDEXMAX) {
-            ONERRSVCBREAK(-5);
+            const uint8_t sindex = serviceindexes[index - REMOTESESSIONINDEX];
+
+            switch (sindex) {
+                case 0:
+                    ir::Handle<ir::Services::IRU>();
+                    break;
+                case 1:
+                    ir::Handle<ir::Services::IRUSER>();
+                    break;
+                case 2:
+                    ir::Handle<ir::Services::IRRST>();
+                    break;
+                default:
+                    ONERRSVCBREAK(-5);
+            }
+
+            target = sessionhandles[index];
+            targetindex = index;
         } else {
             ONERRSVCBREAK(-4);
         }

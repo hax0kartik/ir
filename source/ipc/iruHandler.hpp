@@ -11,9 +11,14 @@ void Handle() {
 
     switch (cmdid) {
         case 0x1: 
-            ir::u::commands::Initialize();
+            cmdbuf[1] = commands::Initialize();
             break;
-        
+
+        case 0x2:
+            cmdbuf[1] = commands::ShutDown();
+            break;
+
+
         default:
             cmdbuf[1] = 0xD900182F;
             break;

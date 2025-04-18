@@ -5,27 +5,34 @@
 namespace ir {
 namespace u {
 
-enum TransferState {
+enum TransferState : uint8_t {
     Ready = 1,
     DataSendInProg = 2,
     DataRecvInProg = 3,
 };
 
 struct irU {
-    TransferState mTransferState;
-    uint8_t mErrorStatus;
+    uint8_t initialized {};
+    uint8_t autoPowerCtl {};
+    uint8_t errorStatus {};
+    TransferState transferState {};
+    Handle events[2] {};
 
     irU () {
-        mTransferState = Ready;
-        mErrorStatus = 0;
+        initialized = 0;
+        autoPowerCtl = 0;
+        transferState = TransferState::Ready;
+        errorStatus = 0;
+        events[0] = 0;
+        events[1] = 0;
     }
 };
 
-extern irU g_irU;
+extern irU gIrU;
 
 namespace commands {
 
-const Result Initialize();
+Result Initialize();
 Result ShutDown();
 Result StartSendTransfer();
 Result WaitSendTransfer();
@@ -39,7 +46,7 @@ Result GetIRLedRecvState();
 Result GetSendFinishedEvent();
 Result GetRecvFinishedEvent();
 Result GetTransferState();
-const uint8_t GetErrorState();
+uint8_t GetErrorState();
 Result SetSleepModeActive();
 Result SetSleepModeState();
 

@@ -1,7 +1,7 @@
 BasicInfo:
   Title                   : ir
   CompanyCode             : "00"
-  ProductCode             : 0828builder
+  ProductCode             : 0406builder
   ContentType             : Application
   Logo                    : None
 
@@ -21,7 +21,7 @@ AccessControlInfo:
   IdealProcessor                : 1
   AffinityMask                  : 2
 
-  Priority                      : -12
+  Priority                      : -5
 
   DisableDebug                  : false
   EnableForceDebug              : true
