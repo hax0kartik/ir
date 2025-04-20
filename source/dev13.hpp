@@ -93,3 +93,24 @@
 /* Values for the mode bit of the MCR Register */
 #define IR_REG_MCR_MODE_UART 0
 #define IR_REG_MCR_MODE_IRDA 1
+
+/* Divisor values */
+#define IR_DIVISOR_115200 10
+#define IR_DIVISOR_96000  12
+#define IR_DIVISOR_72000  16
+#define IR_DIVISOR_57600  20
+#define IR_DIVISOR_48000  24
+#define IR_DIVISOR_38400  30
+#define IR_DIVISOR_36000  32
+#define IR_DIVISOR_24000  48
+#define IR_DIVISOR_19200  60
+#define IR_DIVISOR_18000  64
+#define IR_DIVISOR_12000  96
+#define IR_DIVISOR_9600  120
+#define IR_DIVISOR_7200  160
+#define IR_DIVISOR_6000  192
+#define IR_DIVISOR_4800  240
+#define IR_DIVISOR_3000  384
+
+
+

@@ -5,7 +5,7 @@
 namespace ir {
 namespace driver {
 
-#define IR_DEFAULT_TRIGGER_LVL = 40;
+#define IR_DEFAULT_TRIGGER_LVL 40
 
 class IrDev13 {
     uint8_t mInitialized {};
@@ -39,19 +39,20 @@ class IrDev13 {
     void operator=(const IrDev13 &) = delete;
 
     Result Initialize();
-    void ResetEFCR() const;
+    Result ResetEFCR() const;
     uint8_t ReadIER() const;
     void WriteIER(uint8_t IER) const;
-    void SetDivisor(uint16_t divisor) const;
+    Result SetDivisor(uint16_t divisor) const;
     uint16_t GetDivisor() const;
     Result SetTriggerLvls(uint8_t txLvl, uint8_t rxLvl) const;
     Result IOLatchEnable() const;
-    Result ResetEFCR() const;
     Result SetOutputPinsState(uint8_t state) const;
+    Result DisableTxRx() const;
     Result ResetTxRxFIFO() const;
 
     Result SetupCommunication() const;
     Result GoToSleep();
+    Result SetSleepMode(uint8_t sleep);
 };
 
 } // End of namespace driver

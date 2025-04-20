@@ -11,6 +11,11 @@ enum TransferState : uint8_t {
     DataRecvInProg = 3,
 };
 
+enum Events {
+    SendEvent = 0,
+    RecieveEvent = 1,
+};
+
 struct irU {
     uint8_t initialized {};
     uint8_t autoPowerCtl {};
@@ -39,13 +44,13 @@ Result WaitSendTransfer();
 Result StartRecvTransfer();
 Result WaitRecvTransfer();
 Result GetRecvTransferCount();
-Result SetBitRate();
-Result GetBitRate();
+Result SetBaudRate(uint8_t baudRate);
+Result GetBaudRate();
 Result SetIRLedState();
 Result GetIRLedRecvState();
-Result GetSendFinishedEvent();
-Result GetRecvFinishedEvent();
-Result GetTransferState();
+Handle GetSendFinishedEvent();
+Handle GetRecvFinishedEvent();
+TransferState GetTransferState();
 uint8_t GetErrorState();
 Result SetSleepModeActive();
 Result SetSleepModeState();

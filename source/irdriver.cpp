@@ -3,6 +3,7 @@
 
 extern "C" {
     #include "i2c.h"
+    #include "gpio.h"
 }
 
 namespace ir {
@@ -13,7 +14,13 @@ Result IrDev13::Initialize() {
         return 0xD8210FF9;
     }
 
-    i2cIrInit();
+    Result res = i2cIrInit();
+    if (R_FAILED(res))
+        return res;
+
+    res = gpioIrInit();
+    if (R_FAILED(res))
+        return res;
 
     mInitialized = 1;
     mSleep = 0;
@@ -21,7 +28,7 @@ Result IrDev13::Initialize() {
     /* Explicitly disable sleep mode for now */
     WriteIER(ReadIER());
 
-    Result res = SetupCommunication();
+    res = SetupCommunication();
     if (R_FAILED(res))
         return res;
 
@@ -46,12 +53,12 @@ Result IrDev13::SetOutputPinsState(const uint8_t state) const {
 }
 
 Result IrDev13::DisableTxRx() const {
-    I2C_WriteRegister8(DEV_IR, IR_REG_EFCR, IR_REG_EFCR_RXDISABLE | IR_REG_EFCR_TXDISABLE);
+    return I2C_WriteRegister8(DEV_IR, IR_REG_EFCR, IR_REG_EFCR_RXDISABLE | IR_REG_EFCR_TXDISABLE);
 }
 
 Result IrDev13::ResetTxRxFIFO() const {
     constinit static int resetFIFO = IR_REG_FCR_RESET_RX_FIFO | IR_REG_FCR_RESET_TX_FIFO;
-    I2C_WriteRegister8(DEV_IR, IR_REG_FCR, resetFIFO);
+    return I2C_WriteRegister8(DEV_IR, IR_REG_FCR, resetFIFO);
 }
 
 uint8_t IrDev13::ReadIER() const {
@@ -81,7 +88,7 @@ Result IrDev13::SetTriggerLvls(uint8_t txLvl, uint8_t rxLvl) const {
     txLvl = txLvl / 4;
     rxLvl = rxLvl / 4;
 
-    const uint8_t tlrVal = rxLvlMasked << 4 | txLvlMasked;
+    const uint8_t tlrVal = rxLvl << 4 | txLvl;
 
     return I2C_WriteRegister8(DEV_IR, IR_REG_TLR, tlrVal);
 }
@@ -105,7 +112,7 @@ uint16_t IrDev13::GetDivisor() const {
     return (divisorHigh << 8) | divisorLow;
 }
 
-void IrDev13::SetDivisor(const uint16_t divisor) const {
+Result IrDev13::SetDivisor(const uint16_t divisor) const {
     /* read original LCR Value */
     uint8_t origLcrValue = 0;
     I2C_ReadRegister8(DEV_IR, IR_REG_LCR, &origLcrValue);
@@ -127,6 +134,8 @@ void IrDev13::SetDivisor(const uint16_t divisor) const {
         do the same.
     */
     GetDivisor();
+
+    return 0;
 }
 
 Result IrDev13::SetupCommunication() const {
@@ -164,10 +173,6 @@ Result IrDev13::SetupCommunication() const {
     res = I2C_WriteRegister8(DEV_IR, IR_REG_EFCR, 0);
     if (R_FAILED(res))
         return res;
-
-    /* Reset TX/RX FIFO */
-    constinit static uint8_t resetFIFO = IR_REG_FCR_RESET_RX_FIFO \
-                     |  IR_REG_FCR_RESET_TX_FIFO;
 
     res = ResetTxRxFIFO();
     if (R_FAILED(res))
@@ -207,6 +212,17 @@ Result IrDev13::GoToSleep() {
     } else {
         return 0xD8210FF8;
     }
+
+    return 0;
+}
+
+Result IrDev13::SetSleepMode(uint8_t sleep) {
+    if (!mInitialized) {
+        return 0xD8210FF8;
+    }
+
+    mSleep = sleep;
+    WriteIER(ReadIER());
 
     return 0;
 }
