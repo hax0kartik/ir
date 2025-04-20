@@ -19,6 +19,9 @@
 #define IR_REG_IOCTL 0x70
 #define IR_REG_EFCR  0x78
 
+#define IR_REG_SPECIAL_DLL 0x0
+#define IR_REG_SPECIAL_DLH 0x8
+
 /* Bits for IER Register */
 #define IR_REG_IER_RHR_INT BIT(0)
 #define IR_REG_IER_THR_INT BIT(1)
@@ -55,6 +58,19 @@
 #define IR_REG_EFR_SPEC_DET BIT(5)
 #define IR_REG_EFR_RTS_EN   BIT(6)
 #define IR_REG_EFR_CTS_EN   BIT(7)
+
+/* Bits for FCR Register */
+#define IR_REG_FCR_FIFO_EN       BIT(0)
+#define IR_REG_FCR_RESET_RX_FIFO BIT(1)
+#define IR_REG_FCR_RESET_TX_FIFO BIT(2)
+
+/* Bits for IOControl Register */
+#define IR_REG_IOCTL_IOLATCH_EN  BIT(0)
+
+/* Bits for EFCR Regiser */
+#define IR_REG_EFCR_9BIT_EN   BIT(0)
+#define IR_REG_EFCR_RXDISABLE BIT(1)
+#define IR_REG_EFCR_TXDISABLE BIT(2)
 
 /* Values for the Parity Select bit of LCR Register */
 #define IR_REG_LCR_PARITY_ODD 0
