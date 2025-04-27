@@ -72,6 +72,19 @@ Result GPIOIR_GetData(u32 mask, u32 *value) {
     return cmdbuf[1];
 }
 
+Result GPIOIR_SetData(u32 value, u32 mask) {
+    Result ret = 0;
+    u32 *cmdbuf = getThreadCommandBuffer();
+    cmdbuf[0] = 0x80080;
+    cmdbuf[1] = value;
+    cmdbuf[2] = mask;
+
+    if (R_FAILED(ret = svcSendSyncRequest(gpioIrHandle)))
+        return ret;
+
+    return cmdbuf[1];
+}
+
 Result GPIOIR_BindInterrupt(Handle *intr) {
     Result ret = 0;
     u32 *cmdbuf = getThreadCommandBuffer();
@@ -100,3 +113,4 @@ Result GPIOIR_UnbindInterrupt(Handle *intr) {
 
     return cmdbuf[1];
 }
+

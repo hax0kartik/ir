@@ -49,9 +49,14 @@ class IrDev13 {
     Result SetOutputPinsState(uint8_t state) const;
     Result DisableTxRx() const;
     Result ResetTxRxFIFO() const;
+    Result SetIrLedState(uint8_t enable) const;
+    Result PowerDownPin(uint8_t powDown);
+    uint8_t GetIrLedRecvState() const;
+    void InitializeGpio() const;
 
     Result SetupCommunication() const;
     Result GoToSleep();
+    Result Wakeup();
     Result SetSleepMode(uint8_t sleep);
 };
 

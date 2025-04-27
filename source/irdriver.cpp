@@ -22,6 +22,8 @@ Result IrDev13::Initialize() {
     if (R_FAILED(res))
         return res;
 
+    InitializeGpio();
+
     mInitialized = 1;
     mSleep = 0;
 
@@ -36,6 +38,8 @@ Result IrDev13::Initialize() {
     IOLatchEnable();
 
     SetOutputPinsState(mOutputPinState);
+    GoToSleep();
+    SetIrLedState(0);
 
     return 0;
 }
@@ -77,6 +81,20 @@ void IrDev13::WriteIER(const uint8_t IER) const {
     }
 
     I2C_WriteRegister8(DEV_IR, IR_REG_IER, finalVal);
+}
+
+Result IrDev13::PowerDownPin(const uint8_t powDown) {
+    auto pinState = mOutputPinState;
+    if (powDown) {
+        pinState &= ~1;
+    } else {
+        pinState |= 1;
+    }
+    mOutputPinState = pinState;
+
+    Result ret = I2C_WriteRegister8(DEV_IR, IR_REG_IOSTA, pinState);
+    svcSleepThread(200000LL);
+    return ret;
 }
 
 Result IrDev13::SetTriggerLvls(uint8_t txLvl, uint8_t rxLvl) const {
@@ -202,10 +220,14 @@ Result IrDev13::SetupCommunication() const {
 Result IrDev13::GoToSleep() {
     DisableTxRx();
 
-    Result res = ResetTxRxFIFO();
+    Result res = PowerDownPin(1);
     if (R_FAILED(res))
         return res;
-    
+
+    res = ResetTxRxFIFO();
+    if (R_FAILED(res))
+        return res;
+
     if (mInitialized) {
         mSleep = 1;
         WriteIER(ReadIER());
@@ -216,7 +238,18 @@ Result IrDev13::GoToSleep() {
     return 0;
 }
 
-Result IrDev13::SetSleepMode(uint8_t sleep) {
+Result IrDev13::Wakeup() {
+    if (!mInitialized) {
+        return 0xD8210FF8;
+    }
+
+    mSleep = 0;
+    WriteIER(ReadIER());
+
+    return PowerDownPin(0);
+}
+
+Result IrDev13::SetSleepMode(const uint8_t sleep) {
     if (!mInitialized) {
         return 0xD8210FF8;
     }
@@ -227,5 +260,26 @@ Result IrDev13::SetSleepMode(uint8_t sleep) {
     return 0;
 }
 
+Result IrDev13::SetIrLedState(const uint8_t enable) const {
+    const uint32_t val = enable ? 1024 : 0;
+    return GPIOIR_SetData(val, 1024);
 }
+
+uint8_t IrDev13::GetIrLedRecvState() const {
+    uint32_t val = 0;
+    GPIOIR_GetData(2048, &val);
+    return val == 0;
+}
+
+void IrDev13::InitializeGpio() const {
+    /* I have no clue what any of this does */
+    GPIOIR_SetRegPart1(1024, 1024);
+    SetIrLedState(0);
+    GPIOIR_SetRegPart1(0, 2048);
+    GPIOIR_SetRegPart1(0, 128);
+    GPIOIR_SetRegPart2(0, 128);
+    GPIOIR_SetInterruptMask(128, 128);
+}
+
+} // End of namespace driver
 } // End of namespace ir
