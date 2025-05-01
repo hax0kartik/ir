@@ -85,6 +85,77 @@ Result irC::SetBaudRate(BaudRate baudRate) {
     return 0;
 }
 
+Result irC::GetBaudRate(BaudRate *baudrate) {
+    uint16_t divisor = mIrDev13Driver.GetDivisor();
+    switch (divisor) {
+        case IR_DIVISOR_115200:
+            *baudrate = BaudRate::B115200;
+            break;
+
+        case IR_DIVISOR_96000:
+            *baudrate = BaudRate::B96000;
+            break;
+        
+        case IR_DIVISOR_72000:
+            *baudrate = BaudRate::B72000;
+            break;
+
+        case IR_DIVISOR_48000:
+            *baudrate = BaudRate::B48000;
+            break;
+
+        case IR_DIVISOR_36000:
+            *baudrate = BaudRate::B36000;
+            break;
+
+        case IR_DIVISOR_24000:
+            *baudrate = BaudRate::B24000;
+            break;
+
+        case IR_DIVISOR_12000:
+            *baudrate = BaudRate::B12000;
+            break;
+
+        case IR_DIVISOR_9600:
+            *baudrate = BaudRate::B9600;
+            break;
+
+        case IR_DIVISOR_6000:
+            *baudrate = BaudRate::B6000;
+            break;
+
+        case IR_DIVISOR_3000:
+            *baudrate = BaudRate::B3000;
+            break;
+
+        case IR_DIVISOR_57600:
+            *baudrate = BaudRate::B57600;
+            break;
+
+        case IR_DIVISOR_38400:
+            *baudrate = BaudRate::B38400;
+            break;
+
+        case IR_DIVISOR_19200:
+            *baudrate = BaudRate::B19200;
+            break;
+
+        case IR_DIVISOR_7200:
+            *baudrate = BaudRate::B7200;
+            break;
+
+        case IR_DIVISOR_4800:
+            *baudrate = BaudRate::B4800;
+            break;
+        
+        default:
+            *baudrate = BaudRate::INVALID;
+            return 0xE0E10FED;
+    }
+
+    return 0;
+}
+
 } // End of namespace ir
 
 

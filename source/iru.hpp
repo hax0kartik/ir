@@ -53,7 +53,7 @@ Result StartRecvTransfer();
 Result WaitRecvTransfer();
 Result GetRecvTransferCount();
 Result SetBaudRate(uint8_t baudRate);
-Result GetBaudRate();
+Result GetBaudRate(uint8_t *baudRate);
 Result SetIRLedState(uint8_t enable);
 Result GetIRLedRecvState(uint8_t *state);
 Handle GetSendFinishedEvent();

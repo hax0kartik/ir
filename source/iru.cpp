@@ -71,6 +71,22 @@ Result ShutDown() {
     return 0;
 }
 
+Result GetBaudRate(uint8_t *baudrate) {
+    if (gIr.HasIrDriverErrored()) {
+        return 0xF9610C02;
+    }
+
+    if (gIr.InvalidState()) {
+        return 0xC8A10C01;
+    }
+
+    if (gIrU.transferState == TransferState::Ready) {
+        return gIr.GetBaudRate(reinterpret_cast<BaudRate *>(baudrate));
+    }
+
+    return 0xC8A10FF0;
+}
+
 Result SetBaudRate(uint8_t baudRate) {
     if (gIr.HasIrDriverErrored()) {
         return 0xF9610C02;

@@ -25,6 +25,14 @@ void Handle() {
             cmdbuf[1] = commands::SetBaudRate(cmdbuf[1] & 0xFF);
             break;
 
+        case 0xA: {
+            uint8_t baudRate;
+            cmdbuf[0] = 0xA0080;
+            cmdbuf[1] = commands::GetBaudRate(&baudRate);
+            cmdbuf[2] = baudRate;
+            break;
+        }
+
         case 0xB:
             cmdbuf[0] = 0xB0040;
             cmdbuf[1] = commands::SetIRLedState(static_cast<uint8_t>(cmdbuf[1]));

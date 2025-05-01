@@ -30,7 +30,8 @@ enum BaudRate : uint8_t {
     B38400,
     B19200,
     B7200,
-    B4800
+    B4800,
+    INVALID
 };
 
 class irC {
@@ -61,6 +62,7 @@ class irC {
     }
 
     Result SetBaudRate(BaudRate BaudRate);
+    Result GetBaudRate(BaudRate *BaudRate);
 };
 
 extern class irC gIr;
