@@ -5,7 +5,28 @@ namespace ir::u {
 irU gIrU;
 
 void ThreadFunc() {
+    auto GoBackToSleep = [&]() -> Result {
+        Result ret = gIr.GetIrDev13Driver().ResetTxRxFIFO();
+        if (R_FAILED(ret)) {
+            ret = 0xF9610C02;
+            gIr.IrDriverError() = 1;
+        }
+
+        if (R_SUCCEEDED(ret) && gIrU.autoPowerCtl) {
+            ret = gIr.GetIrDev13Driver().GoToSleep();
+            if (R_FAILED(ret)) {
+                ret = 0xF9610C02;
+                gIr.IrDriverError() = 1;
+            }
+        }
+
+        return ret;
+    };
+
     while (1) {
+        int8_t event = -1;
+        Result ret = 0;
+
         svcWaitSynchronization(gIrU.wakeUpThreadEvent, -1LL);
 
         /* This is requested by ShutDown */
@@ -15,21 +36,60 @@ void ThreadFunc() {
             return;
         }
 
-        if (gIrU.transferState == TransferState::DataSendInProg) {
-            if (gIrU.autoPowerCtl) {
-                Result ret = gIr.GetIrDev13Driver().Wakeup();
-                if (R_FAILED(ret)) {
-                    ret = 0xF9610C02;
-                    gIr.IrDriverError() = 1;
-                } else {
-                    
-                }
+        /* Wakeup only if autoPowerCtl is true */
+        if (gIrU.autoPowerCtl) {
+            ret = gIr.GetIrDev13Driver().Wakeup();
+            if (R_FAILED(ret)) {
+                gIr.IrDriverError() = 1;
+                continue;
             }
         }
+
+         /* Enable Interrupts, Send/Recieve*/
+        if (gIrU.transferState == TransferState::DataSendInProg) {
+            /* official ir - Wakeup is performed here */
+
+            ret = gIr.GetIrDev13Driver().EnableTHRInterrupts();
+            if (R_FAILED(ret)) {
+                gIr.IrDriverError() = 1;
+                gIrU.errorStatus = ErrorStatus::SendError;
+            } else {
+                DoSend();
+                event = Events::SendEvent;
+            }
+
+        } else if (gIrU.transferState == TransferState::DataRecvInProg) {
+            /* official ir - Wakeup is performed here */
+
+            ret = gIr.GetIrDev13Driver().EnableRHRInterrupts();
+            if (R_FAILED(ret)) {
+                gIr.IrDriverError() = 1;
+                gIrU.errorStatus = ErrorStatus::RecieveError;
+            } else {
+                DoRecieve();
+                event = Events::RecieveEvent;
+            }
+        }
+
+        GoBackToSleep();
+
+        if (!gIrU.cancel && event >= 0) {
+            svcSignalEvent(gIrU.events[event]);
+        }
+
+        gIrU.transferState = TransferState::Ready;
     }
 }
 
+void DoSend() {
+
 }
+
+void DoReceieve() {
+
+}
+
+} // End of namespace ir::u
 
 namespace ir::u::commands {
 
@@ -46,7 +106,7 @@ Result Initialize() {
 
     /* Mark as ready to transfer and automatically control power */
     gIrU.transferState = TransferState::Ready;
-    gIrU.errorStatus = 0;
+    gIrU.errorStatus = ErrorStatus::NoError;
     gIrU.autoPowerCtl = 1;
 
     for (int i = 0; i < 2; i++) {

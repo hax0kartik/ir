@@ -72,7 +72,7 @@ uint8_t IrDev13::ReadIER() const {
     return buf;
 }
 
-void IrDev13::WriteIER(const uint8_t IER) const {
+Result IrDev13::WriteIER(const uint8_t IER) const {
     uint8_t finalVal = IER;
     if (mSleep) {
         finalVal |= IR_REG_IER_SLEEP;
@@ -80,7 +80,27 @@ void IrDev13::WriteIER(const uint8_t IER) const {
         finalVal &= ~IR_REG_IER_SLEEP;
     }
 
-    I2C_WriteRegister8(DEV_IR, IR_REG_IER, finalVal);
+    return I2C_WriteRegister8(DEV_IR, IR_REG_IER, finalVal);
+}
+
+Result IrDev13::EnableTHRInterrupts() const {
+    constinit static int fcr = IR_REG_FCR_RESET_RX_FIFO \
+        | IR_REG_FCR_RESET_TX_FIFO \
+        | IR_REG_FCR_FIFO_EN;
+
+    I2C_WriteRegister8(DEV_IR, IR_REG_FCR, fcr);
+    I2C_WriteRegister8(DEV_IR, IR_REG_EFCR, IR_REG_EFCR_RXDISABLE);
+    return WriteIER(IR_REG_IER_THR_INT);
+}
+
+Result IrDev13::EnableRHRInterrupts() const {
+    constinit static int fcr = IR_REG_FCR_RESET_RX_FIFO \
+        | IR_REG_FCR_RESET_TX_FIFO \
+        | IR_REG_FCR_FIFO_EN;
+
+    I2C_WriteRegister8(DEV_IR, IR_REG_FCR, fcr);
+    I2C_WriteRegister8(DEV_IR, IR_REG_EFCR, IR_REG_EFCR_TXDISABLE);
+    return WriteIER(IR_REG_IER_RHR_INT | IR_REG_IER_RLS_INT);
 }
 
 Result IrDev13::PowerDownPin(const uint8_t powDown) {

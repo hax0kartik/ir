@@ -41,7 +41,7 @@ class IrDev13 {
     Result Initialize();
     Result ResetEFCR() const;
     uint8_t ReadIER() const;
-    void WriteIER(uint8_t IER) const;
+    Result WriteIER(uint8_t IER) const;
     Result SetDivisor(uint16_t divisor) const;
     uint16_t GetDivisor() const;
     Result SetTriggerLvls(uint8_t txLvl, uint8_t rxLvl) const;
@@ -49,6 +49,8 @@ class IrDev13 {
     Result SetOutputPinsState(uint8_t state) const;
     Result DisableTxRx() const;
     Result ResetTxRxFIFO() const;
+    Result EnableTHRInterrupts() const;
+    Result EnableRHRInterrupts() const;
     Result SetIrLedState(uint8_t enable) const;
     Result PowerDownPin(uint8_t powDown);
     uint8_t GetIrLedRecvState() const;

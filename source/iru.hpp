@@ -16,6 +16,12 @@ enum Events {
     RecieveEvent = 1,
 };
 
+enum ErrorStatus : uint8_t {
+    NoError = 0,
+    RecieveError = 1,
+    SendError = 2,
+};
+
 struct irU {
     uint8_t initialized {};
     uint8_t autoPowerCtl {};
@@ -39,6 +45,8 @@ struct irU {
     }
 };
 
+void DoSend();
+void DoRecieve();
 void ThreadFunc();
 
 extern irU gIrU;
