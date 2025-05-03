@@ -1,9 +1,9 @@
-#include "irdriver.hpp"
+#include "dev13driver.hpp"
 #include "dev13.hpp"
 
 extern "C" {
-    #include "i2c.h"
-    #include "gpio.h"
+    #include "../i2c.h"
+    #include "../gpio.h"
 }
 
 namespace ir {

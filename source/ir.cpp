@@ -1,7 +1,13 @@
 #include "ir.hpp"
+#include "irrst.hpp"
 
 namespace ir {
 irC gIr;
+
+void Initialize() {
+    gIr.GetIrDev13Driver().Initialize();
+    rst::Initialize();
+}
 
 Result irC::SetBaudRate(BaudRate baudRate) {
 

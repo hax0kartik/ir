@@ -1,6 +1,6 @@
 #pragma once
 #include <3ds.h>
-#include "irdriver.hpp"
+#include "drivers/dev13driver.hpp"
 
 namespace ir {
 using namespace driver;
@@ -33,6 +33,8 @@ enum BaudRate : uint8_t {
     B4800,
     INVALID
 };
+
+void Initialize();
 
 class irC {
     uint8_t mIrDriverErr {};

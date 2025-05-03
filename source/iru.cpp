@@ -287,4 +287,4 @@ Result SetSleepModeState(const uint8_t wakeup) {
     return ret;
 }
 
-} // End of namespace ir
+} // End of namespace ir::u::commands

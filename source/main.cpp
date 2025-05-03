@@ -112,7 +112,7 @@ int main() {
     s32 targetindex = -1;
     int terminationflag = 0;
 
-    ir::gIr.GetIrDev13Driver().Initialize();
+    ir::Initialize();
 
     for (;;) {
         s32 index;
