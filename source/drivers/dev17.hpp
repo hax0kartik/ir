@@ -9,9 +9,15 @@
 #define IR_CMD_UNK_x37         0x37
 
 #define IR_CMD_UNK_x52         0x52
-#define IR_CMD_UNK_xC1         0xC1
+
+#define IR_CMD_UNK_x80         0x80
+#define IR_CMD_UNK_x84         0x84
+
+#define IR_CMD_UNK_x90         0x90
+#define IR_CMD_UNK_x96         0x96
 
 #define IR_CMD_SCAN_PERIOD     0xA0
+#define IR_CMD_UNK_xC1         0xC1
 
 /* 0xD0 and 0xD2 are related */
 #define IR_CMD_UNK_xD0         0xD0

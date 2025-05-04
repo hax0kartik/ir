@@ -6,6 +6,7 @@ irC gIr;
 
 void Initialize() {
     gIr.GetIrDev13Driver().Initialize();
+    gIr.GetCppMaster().Initialize();
     rst::Initialize();
 }
 

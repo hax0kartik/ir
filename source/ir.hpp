@@ -1,5 +1,6 @@
 #pragma once
 #include <3ds.h>
+#include "cppMaster.hpp"
 #include "drivers/dev13driver.hpp"
 
 namespace ir {
@@ -40,15 +41,20 @@ class irC {
     uint8_t mIrDriverErr {};
     uint8_t mInvalidState {};
     IrDev13 mIrDev13Driver {};
+    CppMaster mIrCppMaster {};
 
     public:
-    irC () : mIrDev13Driver() {
+    irC () : mIrDev13Driver(), mIrCppMaster() {
         mInvalidState = 0;
         mIrDriverErr = 0;
     }
 
     IrDev13& GetIrDev13Driver() {
         return mIrDev13Driver;
+    }
+
+    CppMaster& GetCppMaster() {
+        return mIrCppMaster;
     }
 
     uint8_t HasIrDriverErrored() const {
